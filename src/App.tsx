@@ -12,7 +12,7 @@ function App() {
      <ol>
       {quizData.map((quiz,index)=>(
         <li key={index}>
-          <Quiz quiz={quiz}/>
+          <Quiz quiz={quiz} onOptionClick={(selectedOption)=>index}/>
         </li>
       ))}
      </ol>
