@@ -1,30 +1,30 @@
-import React, { useState } from 'react';
+import React, { useReducer, useState } from 'react';
 import './App.css';
 import Header from './components/Header';
 import { Quiz } from './components/Quiz';
 import { quizData } from './data/quizData.content';
 import { Score } from './components/Score';
 import { checkAnswer } from './utils/commonFunction';
+import { AppState } from './reducer/quizReducer.type';
+import { quizReducer } from './reducer/quizReducer';
+
+export const initialState:AppState ={
+  quizData:quizData,
+  currentQuestionIndex:0,
+  score:0
+}
 
 const App : React.FC=()=>{
-  const [currentQuestionIndex, setCurrentQuestionIndex]=useState<number>(0);
-  const [score,setScore]=useState<number>(0);
-
-  const handleOptionClick=(selectedOption:number)=>{
-    const currentQuiz=quizData[currentQuestionIndex];
-    if(checkAnswer(selectedOption,currentQuiz.correctOption)){
-      setScore(score+1);
-    }
-    setCurrentQuestionIndex(currentQuestionIndex+1)
-  }
-
-
+  const [state,dispatch]=useReducer(quizReducer,initialState);
   return (
     <div className="App">
      <Header title='Quiz app'/>
-     {currentQuestionIndex < quizData.length ? (
-        <Quiz quiz={quizData[currentQuestionIndex]} onOptionClick={handleOptionClick}/>
-     ):( <Score currentScore={score} totalScore={quizData.length}/>)}
+     {state.currentQuestionIndex < state.quizData.length ? (
+      <Quiz quiz={state.quizData[state.currentQuestionIndex]} onOptionClick={(selectedOption)=>dispatch({type:'ATTEMPTED', selectedOption})}/>
+     ):(<Score 
+     currentScore={state.score}
+     totalScore={state.quizData.length}
+     onReset={()=>dispatch({type:'RESET'})}/>)}
     </div>
   );
 }
